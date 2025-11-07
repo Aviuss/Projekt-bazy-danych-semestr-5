@@ -11,4 +11,4 @@ Wynikiem pierwszej iteracji powinno być porównanie jakości dwóch powyższych
 
 ## Pliki
 
-- [1. primitive_generator](/generators/primitive_generator.py)
+- [1. exponential random generator](/generators/exp_random_generator.py)
