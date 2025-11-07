@@ -8,3 +8,7 @@ Przeprowadzenie eksperymentu wymaga zbudowania trzech komponentów oprogramowani
     - [ ] c: Porównanie wyników działania algorytmów. Dla tego samego zbioru wektorów obciążeń shardów należy wyznaczyć poziom niezrównoważenia przez wyliczenie błędu średniokwadratowego dla wszystkich sumarycznych wektorów każdej lokalizacji z uśrednionym wektorem dla całej chmury, który jest sumą wektorów obciążenia wszystkich shardów we wszystkich lokalizacjach podzieloną przez liczbę węzłów chmury.
 
 Wynikiem pierwszej iteracji powinno być porównanie jakości dwóch powyższych algorytmów dla kilku losowo wygenerowanych zbiorów wektorów obciążenia shardów.
+
+## Pliki
+
+- [1. primitive_generator](/generators/primitive_generator.py)
