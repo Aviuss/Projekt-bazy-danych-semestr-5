@@ -11,4 +11,6 @@ Wynikiem pierwszej iteracji powinno być porównanie jakości dwóch powyższych
 
 ## Pliki
 
-- [1. exponential random generator](/generators/exp_random_generator.py)
+- [1. Plik zadania](/tasks/task%201/main.py)
+- [2. exponential random generator](/generators/exp_random_generator.py)
+- [3. random shard allocation algorithm](/shard_allocation_algorithms/random_allocation.py)
