@@ -15,15 +15,21 @@ if __name__ == "__main__":
         dimensions=24,
         lambda_value=1
     ).generate()
-    
+
     node_count = round(SHARD_COUNT/AVERAGE_SHARDS_PER_NODE)
     list_of_nodes = [Node() for _ in range(node_count)]
 
-
-    Random_allocation(
-        list_of_nodes = list_of_nodes
-    ).allocate(
-        list_of_load_vectors = list_of_load_vectors
-    )
-
+    # Random_allocation(
+    #     list_of_nodes = list_of_nodes
+    # ).allocate(
+    #     list_of_load_vectors = list_of_load_vectors
+    # )
+    # data = Random_allocation(list_of_nodes).data_of_allocated_vectors()
+    
+    random_allocated = Random_allocation(list_of_nodes)
+    random_allocated.allocate(list_of_load_vectors)
+    data_random_allocated = random_allocated.data_of_allocated_vectors()
+    
+    for _ in data_random_allocated:
+        print(_)
     print("end")
