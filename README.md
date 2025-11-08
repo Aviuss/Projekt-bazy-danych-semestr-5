@@ -17,12 +17,20 @@ Zadaniem algorytmów alokacji shardów jest minimalizacja opóźnień w dostępi
 Należy skonstruować sparametryzowany generator przewidywanego obciążenia dla każdego z shardów. Generowane wektory obciążenia będą przynależeć do jednego z kilku klastrów. Przebiegi obciążenia shardów w pojedynczym klastrze mają być skorelowane. Jednymi z parametrów generatora mają być korelacje przebiegów obciążenia wewnątrz klastrów i między klastrami.
 Zbiór wygenerowanych wektorów ma być następnie alokowanych przez wybrane algorytmy. Ocena działania algorytmów będzie polegać na porównaniu błędu średniokwadratowego odstępstw sumarycznych obciążeń węzłów od uśrednionego obciążenia całej chmury.
 
+## Generator
+- [Rozkład wykładniczy](/generators/exp_random_generator.py)
+
+Użycie: `$ python exp_random_generator_run.py <shard_count> [filename]`, np. 
+- `$ python exp_random_generator.py 30 result.txt` → zapisanie wyniku do pliku
+- `$ python exp_random_generator.py 30` → wypisanie wyniku na konsoli
+
 ## Zadania
 
-- [zadanie 1](/tasks/task%201/description.md)
+- [Zadanie 1](/tasks/task_1/description.md)
 
 
 ## Skład zespoły
 
 - tutaj możecie się wpisać, nie wiem czy chcecie imie i nazwisko, czy inaczej
 - [Konrad](https://github.com/Aviuss)
+- [Teodor](https://github.com/Teodor11)
