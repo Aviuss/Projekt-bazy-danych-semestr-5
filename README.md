@@ -21,8 +21,8 @@ Zbiór wygenerowanych wektorów ma być następnie alokowanych przez wybrane alg
 - [Rozkład wykładniczy](/generators/exp_random_generator.py)
 
 Użycie: `$ python exp_random_generator_run.py <shard_count> [filename]`, np. 
-- `$ python exp_random_generator.py 30 result.txt` → zapisanie wyniku do pliku
-- `$ python exp_random_generator.py 30` → wypisanie wyniku na konsoli
+- `$ python exp_random_generator_run.py 30 result.txt` → zapisanie wyniku do pliku
+- `$ python exp_random_generator_run.py 30` → wypisanie wyniku na konsoli
 
 ## Zadania
 
