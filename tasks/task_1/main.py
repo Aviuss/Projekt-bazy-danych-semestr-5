@@ -1,7 +1,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')))
-from generators.exp_random_generator import Exp_random_generator
+from generators.exp_random_generator import ExpRandomGenerator
 from utils.node import Node
 from shard_allocation_algorithms.random_allocation import Random_allocation
 import math
@@ -10,7 +10,7 @@ if __name__ == "__main__":
     AVERAGE_SHARDS_PER_NODE = 10
     SHARD_COUNT = 54
     
-    list_of_load_vectors = Exp_random_generator(
+    list_of_load_vectors = ExpRandomGenerator(
         shard_count=SHARD_COUNT,
         dimensions=24,
         lambda_value=1
@@ -32,4 +32,3 @@ if __name__ == "__main__":
     
     for _ in data_random_allocated:
         print(_)
-    print("end")
