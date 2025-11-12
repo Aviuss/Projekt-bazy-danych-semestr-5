@@ -2,8 +2,8 @@
 # $ python exp_random_generator_run.py <shard_count> [filename]
 
 # Examples:
-# $ python exp_random_generator.py 30 result.txt
-# $ python exp_random_generator.py 30
+# $ python exp_random_generator_run.py 30 result.txt
+# $ python exp_random_generator_run.py 30
 
 import sys
 from exp_random_generator import ExpRandomGenerator
