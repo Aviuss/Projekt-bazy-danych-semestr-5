@@ -31,6 +31,7 @@ Użycie: `$ python exp_random_generator_run.py <shard_count> [filename]`, np.
 
 ## Skład zespoły
 
+- [Kamil Suwiczak](https://github.com/kamilsuwiczak)
 - [PMigaj](https://github.com/patromi)
 - [Konrad](https://github.com/Aviuss)
 - [Teodor](https://github.com/Teodor11)
