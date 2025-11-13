@@ -1,5 +1,9 @@
 import math
 import random
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from utils.input_output import InputOutput
 
 class ExpRandomGenerator:
     def __init__(self, shard_count, dimensions = 24, lambda_value = 1):
@@ -15,23 +19,9 @@ class ExpRandomGenerator:
                 self.list_of_load_vectors[i][j] = random.expovariate(self.lambda_value)
         return self.list_of_load_vectors
 
-    def print_result(self, filename=None):
-        result = ""
-        for i in range(len(self.list_of_load_vectors)):
-            for j in range(len(self.list_of_load_vectors[i])):
-                result += str(self.list_of_load_vectors[i][j])
-                
-                if j < len(self.list_of_load_vectors[i]) - 1:
-                    result += " " 
-        
-            result += "\n"
-        
-        if (filename):
-            file = open(filename, "w")
-            file.write(result)
-            file.close()
-            print("Result saved to:", filename)
-        else:
-            print(result)
-        
-        return
+    def print_results(self):
+        for vector, load_vector in enumerate(self.list_of_load_vectors):
+            print(f'vector {vector}:',[round(value, 4) for value in load_vector])
+    
+    def save_results(self, filename):
+        InputOutput().save_to_csv_file(self.list_of_load_vectors, filename)

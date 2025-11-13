@@ -10,7 +10,7 @@ from exp_random_generator import ExpRandomGenerator
 
 def main():
     
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 3:
         print("Missing required arguments")
         print("Usage: `python exp_random_generator_run.py <shard_count> [filename]`")
         return
@@ -23,10 +23,7 @@ def main():
     
     generator = ExpRandomGenerator(shard_count)
     generator.generate()
-
-    if len(sys.argv) >= 3 and sys.argv[2] != None:
-        generator.print_result(sys.argv[2])     # save result to file
-    else:
-        generator.print_result()                # print result on console
+    generator.print_results()      
+    generator.save_results(sys.argv[2])   
 
 main()
