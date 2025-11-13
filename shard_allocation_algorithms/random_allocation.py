@@ -1,5 +1,4 @@
 import random
-from utils.node import Node
 import numpy as np
 
 class Random_allocation:
