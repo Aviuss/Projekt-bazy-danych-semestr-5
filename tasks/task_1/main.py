@@ -3,6 +3,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')))
 from generators.exp_random_generator import ExpRandomGenerator
 from utils.node import Node
+from utils.charts import ChartMSE
 from algorithms.shard_algorithm import ShardAlgorithm
 from algorithms.random_allocation import RandomAllocation
 from algorithms.multiway_number_partitioning import MultiwayNumberPartitioning
@@ -25,7 +26,8 @@ if __name__ == "__main__":
     multiway_number_partitioning = MultiwayNumberPartitioning(nodes_multiway_partitioning)
 
     ALGORITHMS: list[ShardAlgorithm] = [random_allocated, multiway_number_partitioning]
-    
+    chart = ChartMSE()
+
     for a in ALGORITHMS:
         print("###############################################################")
         print("### Algorithm:", a.name, "###")
@@ -36,7 +38,10 @@ if __name__ == "__main__":
             # print(node)
 
         score = a.algorithm_score()
+        chart.add_series(a.name, score)
         print("Average MSE:", score["MSE_average"])
         print("Median MSE:", score["MSE_median"])
         print("Max MSE:", score["MSE_max"])
         print("\n")
+
+    chart.draw()
