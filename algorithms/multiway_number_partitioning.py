@@ -1,9 +1,9 @@
 import random
-import numpy as np
+from algorithms.shard_algorithm import ShardAlgorithm
 
-class Multidimentional_Multiway_Number_Partitioning:
+class MultiwayNumberPartitioning(ShardAlgorithm):
     def __init__(self, list_of_nodes):
-        self.list_of_nodes = list_of_nodes
+        super().__init__("Multiway number partitioning", list_of_nodes)
 
     def allocate(self, list_of_load_vectors):
         if len(list_of_load_vectors) == 0:
@@ -64,19 +64,6 @@ class Multidimentional_Multiway_Number_Partitioning:
 
             self.list_of_nodes[selected_node_idx].add_load_vector(examined_vector)
         
-
-
-    def data_of_allocated_vectors(self):
-        data = []
-        for index, node in enumerate(self.list_of_nodes):
-            node_data = {
-                "node": index,
-                "load_vector_count": len(node.list_of_load_vectors),
-                "average": np.mean(node.list_of_load_vectors),
-                "sum": np.sum(node.list_of_load_vectors)
-            }
-            data.append(node_data)
-        return data
 
     def add_vectors(self, a, b):
         K = len(a)
