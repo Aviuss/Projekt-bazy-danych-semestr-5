@@ -6,6 +6,7 @@
 # $ python exp_random_generator_run.py 30
 
 import sys
+import os
 from exp_random_generator import ExpRandomGenerator
 
 def main():
@@ -24,6 +25,11 @@ def main():
     generator = ExpRandomGenerator(shard_count)
     generator.generate()
     generator.print_results()      
-    generator.save_results(sys.argv[2])   
+
+    if 'vectors_data' not in os.listdir('../'):
+        os.mkdir('../vectors_data')
+        generator.save_results('../vectors_data/' + sys.argv[2])
+    else:
+        generator.save_results('../vectors_data/' + sys.argv[2])   
 
 main()
