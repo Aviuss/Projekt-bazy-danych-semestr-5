@@ -1,21 +1,18 @@
 import pandas as pd
+import os
+
 
 class InputOutput:
+    @staticmethod
+    def save_to_csv_file(data: pd.DataFrame, filename: str = "load_vectors.csv",
+                         dir_name: str = "input_files", ) -> None:
+        if dir_name not in os.listdir("../"):
+            os.mkdir("..//" + dir_name)
 
-    def save_to_csv_file(self, data, filename):
-        with open(filename, 'w') as file:
-            result = ""
-            for i in range(len(data)):
-                for j in range(len(data[i])):
-                    result += str(data[i][j])
-                    
-                    if j < len(data[i]) - 1:
-                        result += "," 
-            
-                result += "\n"
-            file.write(result)
-    
-    def load_from_file(self, filename):
+        data.to_csv(f"..//{dir_name}//{filename}", index=False, header=False, mode="w")
+        return
+
+    @staticmethod
+    def read_input_file(filename: str) -> pd.DataFrame:
         data = pd.read_csv(filename, header=None)
         return data
-    

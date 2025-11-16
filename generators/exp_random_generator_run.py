@@ -7,7 +7,7 @@
 
 import sys
 from exp_random_generator import ExpRandomGenerator
-
+import pandas as pd
 def main():
     
     if len(sys.argv) < 3:
@@ -23,7 +23,7 @@ def main():
     
     generator = ExpRandomGenerator(shard_count)
     generator.generate()
-    generator.print_results()      
-    generator.save_results(sys.argv[2])   
+    generator.print_results()
+    generator.save_to_csv_file(pd.DataFrame(generator.list_of_load_vectors), sys.argv[2])
 
 main()
