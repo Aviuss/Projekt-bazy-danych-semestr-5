@@ -1,4 +1,6 @@
 import sys
+
+import pandas as pd
 from pandas import DataFrame
 from utils.input_output import InputOutput
 from generators.exp_random_generator import ExpRandomGenerator
@@ -22,11 +24,18 @@ class Main(InputOutput):
 
     def __init__(self, mode: str = "generate", input_name: str = "input_vectors.csv"):
         """
-        :param mode: "generate" to create random load vectors, "load" to read from a file
-        :param input_name: The name of the input file to load vectors from (used if mode is "load")
+        Summary:
+            Initializes the Main class with the specified mode and input file name.
+        Parameters:
+            mode(str): The mode of operation, either "generate" to create random load vectors or
+                        "load" to read load vectors from a file.
+            input_name(str): The name of the input file to read load vectors from (used only
+                                when mode is "load").
+        Returns:
+            None
         """
-        self.mode = mode
-        self.input_name = input_name
+        self.mode: str = mode
+        self.input_name: str = input_name
         self.node_count: int = SHARD_COUNT // AVERAGE_SHARDS_PER_NODE
         self.chart: ChartMSE = ChartMSE()
         self.nodes: Dict[str, List[Node]] = {
@@ -75,9 +84,9 @@ class Main(InputOutput):
             List: A list of load vectors.
         """
         if self.mode == "generate":
-            df_vectors = self.generate_random_vectors()
+            df_vectors: pd.DataFrame = self.generate_random_vectors()
         elif self.mode == "load":
-            df_vectors = self.load_input_vectors(self.input_name)
+            df_vectors: pd.DataFrame = self.load_input_vectors(self.input_name)
         else:
             raise Exception("Invalid mode:", self.mode)
         return df_vectors.values.tolist()
@@ -100,7 +109,7 @@ class Main(InputOutput):
             # for node in data_nodes:
             # print(node)
 
-            score = algorithm_obj.algorithm_score()
+            score: Dict[str, float] = algorithm_obj.algorithm_score()
             self.chart.add_series(algorithm_name, score)
             print("Average MSE:", score["MSE_average"])
             print("Median MSE:", score["MSE_median"])
@@ -124,8 +133,8 @@ class Main(InputOutput):
 if __name__ == "__main__":
     print(sys.argv[1], len((sys.argv)))
     if len(sys.argv) == 2 and sys.argv[1] == "generate":
-        main = Main(mode="generate")
+        main: Main = Main(mode="generate")
         main.run()
     if len(sys.argv) == 3 and sys.argv[1] == "load":
-        main = Main(mode="load", input_name=sys.argv[2])
+        main: Main = Main(mode="load", input_name=sys.argv[2])
         main.run()
