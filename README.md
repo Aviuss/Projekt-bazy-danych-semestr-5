@@ -28,6 +28,10 @@ Użycie: `$ python exp_random_generator_run.py <shard_count> [filename]`, np.
 
 - [Zadanie 1](/tasks/task_1/description.md)
 
+Użycie (wywołanie z głównego katalogu):
+- `$ python -m tasks.task_1.main generate` → wygenerowanie nowych losowych danych
+- `$ python -m tasks.task_1.main load ./tasks/task_1/input_files/data` → wczytanie danych z pliku
+
 
 ## Skład zespoły
 
