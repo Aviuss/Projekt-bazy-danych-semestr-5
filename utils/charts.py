@@ -35,7 +35,7 @@ class ChartMSE:
             ax.bar(df.index, df[STATS[i]], color=c)
             ax.set_title(LABELS[i])
             ax.set_xticks(range(len(df.index)))
-            ax.set_xticklabels(df.index, rotation=5)
+            ax.set_xticklabels(df.index, rotation=15)
 
             for p in ax.patches:
                 value = p.get_height()

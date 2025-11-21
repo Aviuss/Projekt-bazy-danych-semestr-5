@@ -2,8 +2,8 @@ from typing import Dict
 from algorithms.shard_algorithm import ShardAlgorithm
 from utils.node import Node
 from utils.mean_squared_error import MeanSquaredError
+from copy import deepcopy
 import random
-
 
 class MeanSquaredErrorMinimization(ShardAlgorithm):
     def __init__(self, list_of_nodes: list[Node]):
@@ -20,7 +20,6 @@ class MeanSquaredErrorMinimization(ShardAlgorithm):
 
             L2.append({"index": index, "sum": vector_sum, "load_vector": load_vector})
         L2.sort(key=lambda x: x["sum"], reverse=True)
-        # print(L2)
 
         for L2_vector in L2:
             deltas = []
@@ -30,13 +29,16 @@ class MeanSquaredErrorMinimization(ShardAlgorithm):
             for index, node in enumerate(self.list_of_nodes):
                 MSE_before = nodes_MSE[index]
 
-                list_of_nodes_copy = self.list_of_nodes.copy()
+                list_of_nodes_copy = deepcopy(self.list_of_nodes)
                 list_of_nodes_copy[index].add_load_vector(L2_vector["load_vector"])
                 MSE.set_nodes_all(list_of_nodes_copy)
                 MSE_after = MSE.calc_MSE().get("nodes_MSE")[index]
 
-                deltas.append(
-                    {"index": index, "delta": MSE_after - MSE_before, "sum": sum(node.list_of_load_vectors[0])})
+                deltas_sum = 0
+                for n in node.list_of_load_vectors:
+                    deltas_sum += sum(n)
+
+                deltas.append({"index": index, "delta": MSE_before - MSE_after, "sum": deltas_sum })
 
             deltas.sort(key=lambda x: (x["delta"], -x["sum"]), reverse=True)
 
@@ -49,6 +51,5 @@ class MeanSquaredErrorMinimization(ShardAlgorithm):
                 d = deltas[0]
 
             self.list_of_nodes[d["index"]].add_load_vector(L2_vector["load_vector"])
-            print(self.data_of_allocated_vectors())
 
         return
