@@ -7,6 +7,9 @@ class MeanSquaredError:
     def __init__(self, nodes_all: list[Node]):
         self.nodes_all = nodes_all
 
+    def set_nodes_all(self, nodes_all: list[Node]):
+        self.nodes_all = nodes_all
+
     def calc_MSE(self):
         NODES = len(self.nodes_all)
         HOURS = 24
@@ -40,6 +43,7 @@ class MeanSquaredError:
         result = {
             "average": np.mean(nodes_MSE),
             "median": np.median(nodes_MSE),
-            "max": max(nodes_MSE)
+            "max": max(nodes_MSE),
+            "nodes_MSE": nodes_MSE
         }
         return result

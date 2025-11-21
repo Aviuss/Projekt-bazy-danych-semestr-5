@@ -8,6 +8,7 @@ from utils.node import Node
 from utils.charts import ChartMSE
 from algorithms.random_allocation import RandomAllocation
 from algorithms.multiway_number_partitioning import MultiwayNumberPartitioning
+from algorithms.mean_squared_error_minimization import MeanSquaredErrorMinimization
 from typing import List, Dict
 
 AVERAGE_SHARDS_PER_NODE = 10
@@ -40,11 +41,13 @@ class Main(InputOutput):
         self.chart: ChartMSE = ChartMSE()
         self.nodes: Dict[str, List[Node]] = {
             "random_allocation": [Node() for _ in range(self.node_count)],
-            "multiway_partitioning": [Node() for _ in range(self.node_count)]
+            "multiway_partitioning": [Node() for _ in range(self.node_count)],
+            "mean_squared_error_minimization": [Node() for _ in range(self.node_count)],
         }
         self.algorithms: dict[str, RandomAllocation | MultiwayNumberPartitioning] = {
             "random_allocation": RandomAllocation(self.nodes["random_allocation"]),
-            "multiway_partitioning": MultiwayNumberPartitioning(self.nodes["multiway_partitioning"])
+            "multiway_partitioning": MultiwayNumberPartitioning(self.nodes["multiway_partitioning"]),
+            "mean_squared_error_minimization": MeanSquaredErrorMinimization(self.nodes["mean_squared_error_minimization"])
         }
 
     @staticmethod
@@ -102,7 +105,7 @@ class Main(InputOutput):
         """
         for algorithm_name, algorithm_obj in self.algorithms.items():
             print("###############################################################")
-            print("### Algorithm:", algorithm_name, "###")
+            print("### Algorithm:", algorithm_obj.name, "###")
             algorithm_obj.allocate(list_of_load_vectors)
 
             # data_nodes = a.data_of_allocated_vectors()
@@ -110,7 +113,7 @@ class Main(InputOutput):
             # print(node)
 
             score: Dict[str, float] = algorithm_obj.algorithm_score()
-            self.chart.add_series(algorithm_name, score)
+            self.chart.add_series(algorithm_obj.name, score)
             print("Average MSE:", score["MSE_average"])
             print("Median MSE:", score["MSE_median"])
             print("Max MSE:", score["MSE_max"])
