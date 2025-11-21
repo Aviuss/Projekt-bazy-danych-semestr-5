@@ -51,5 +51,5 @@ class MeanSquaredErrorMinimization(ShardAlgorithm):
                 d = deltas[0]
 
             self.list_of_nodes[d["index"]].add_load_vector(L2_vector["load_vector"])
-
+            self.visualize_allocation()
         return

@@ -63,7 +63,7 @@ class MultiwayNumberPartitioning(ShardAlgorithm):
                 selected_node_idx = min_maxnorm["list_of_node_indexes"][random_uniform_choice]
 
             self.list_of_nodes[selected_node_idx].add_load_vector(examined_vector)
-        
+            self.visualize_allocation()
 
     def add_vectors(self, a, b):
         K = len(a)
