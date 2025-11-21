@@ -6,11 +6,10 @@
 # $ python exp_random_generator_run.py 30
 
 import sys
-import os
 from exp_random_generator import ExpRandomGenerator
 
+
 def main():
-    
     if len(sys.argv) < 3:
         print("Missing required arguments")
         print("Usage: `python exp_random_generator_run.py <shard_count> [filename]`")
@@ -21,15 +20,12 @@ def main():
     except ValueError as e:
         print("Invalid argument shard_count:", e)
         return
-    
-    generator = ExpRandomGenerator(shard_count)
-    generator.generate()
-    generator.print_results()      
 
-    if 'vectors_data' not in os.listdir('../'):
-        os.mkdir('../vectors_data')
-        generator.save_results('../vectors_data/' + sys.argv[2])
-    else:
-        generator.save_results('../vectors_data/' + sys.argv[2])   
+    generator = ExpRandomGenerator(shard_count)
+    vectors = generator.generate()
+    generator.print_results()
+
+    generator.save_to_csv_file(data=vectors, filename=sys.argv[2])
+
 
 main()
