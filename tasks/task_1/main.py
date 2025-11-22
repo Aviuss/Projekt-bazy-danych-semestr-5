@@ -114,12 +114,13 @@ class Main(InputOutput):
 
             score: Dict[str, float] = algorithm_obj.algorithm_score()
             self.chart.add_series(algorithm_obj.name, score)
-            algorithm_obj.create_gif(duration=0.4)
+            algorithm_obj.create_gif(fps=4)
             print("Average MSE:", score["MSE_average"])
             print("Median MSE:", score["MSE_median"])
             print("Max MSE:", score["MSE_max"])
             print("###############################################################")
         self.chart.draw()
+        # self.chart.save_chart(".\graphs\mse_comparison.png")
 
     def run(self):
         """

@@ -86,7 +86,7 @@ class ShardAlgorithm:
         self.frame_counter += 1
         return
 
-    def create_gif(self, duration=0.5, keep_frames=False):
+    def create_gif(self, fps=5, keep_frames=False):
         clean_name = self.name.replace(" ", "_")
         base_folder = 'graphs'
         frames_folder = os.path.join(base_folder, f'{clean_name}_frames')
@@ -104,7 +104,7 @@ class ShardAlgorithm:
         for filename in filenames:
             images.append(imageio.imread(filename))
 
-        imageio.mimsave(gif_path, images, duration=duration, loop=0)
+        imageio.mimsave(gif_path, images, fps=fps, loop=0)
 
         print(f"GIF zapisany: {gif_path}")
 
