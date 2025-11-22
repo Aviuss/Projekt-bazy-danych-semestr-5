@@ -67,4 +67,6 @@ class ShardAlgorithm:
         plt.show()
         plt.pause(0.1)
         plt.savefig('./graphs/' + self.name.replace(" ", "_") + '_graph.png')
+        plt.ioff()
+        
         return
