@@ -80,6 +80,7 @@ class ShardAlgorithm:
 
         filename = os.path.join(frames_folder, f'frame_{self.frame_counter:04d}.png')
         plt.savefig(filename)
+        plt.close()
 
         # plt.pause(0.01)
 
