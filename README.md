@@ -18,11 +18,17 @@ Należy skonstruować sparametryzowany generator przewidywanego obciążenia dla
 Zbiór wygenerowanych wektorów ma być następnie alokowanych przez wybrane algorytmy. Ocena działania algorytmów będzie polegać na porównaniu błędu średniokwadratowego odstępstw sumarycznych obciążeń węzłów od uśrednionego obciążenia całej chmury.
 
 ## Generator
-- [Rozkład wykładniczy](/generators/exp_random_generator.py)
+### [Rozkład wykładniczy](/generators/exp_random_generator.py)
 
 Użycie: `$ python exp_random_generator_run.py <shard_count> [filename]`, np. 
 - `$ python exp_random_generator_run.py 30 result.txt` → zapisanie wyniku do pliku
 - `$ python exp_random_generator_run.py 30` → wypisanie wyniku na konsoli
+
+### [Generator sparametryzowany](/generators/parametrized_generator.py)
+
+Użycie: `$ python parametrized_generator.py <shard_count> [filename]`, np. 
+- `$ python parametrized_generator.py 30 result.txt` → zapisanie wyniku do pliku
+- `$ python parametrized_generator.py 30` → wypisanie wyniku na konsoli
 
 ## Zadania
 
