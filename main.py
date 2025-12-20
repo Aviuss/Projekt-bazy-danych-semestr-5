@@ -1,5 +1,4 @@
 import sys
-
 import pandas as pd
 from pandas import DataFrame
 from utils.input_output import InputOutput
@@ -9,6 +8,7 @@ from utils.charts import ChartMSE
 from algorithms.random_allocation import RandomAllocation
 from algorithms.multiway_number_partitioning import MultiwayNumberPartitioning
 from algorithms.mean_squared_error_minimization import MeanSquaredErrorMinimization
+from algorithms.salp import ShardAllocationLoadPrediction
 from typing import List, Dict
 
 AVERAGE_SHARDS_PER_NODE = 10
@@ -40,14 +40,16 @@ class Main(InputOutput):
         self.node_count: int = SHARD_COUNT // AVERAGE_SHARDS_PER_NODE
         self.chart: ChartMSE = ChartMSE()
         self.nodes: Dict[str, List[Node]] = {
-            "random_allocation": [Node() for _ in range(self.node_count)],
-            "multiway_partitioning": [Node() for _ in range(self.node_count)],
-            "mean_squared_error_minimization": [Node() for _ in range(self.node_count)],
+            # "random_allocation": [Node() for _ in range(self.node_count)],
+            # "multiway_partitioning": [Node() for _ in range(self.node_count)],
+            # "mean_squared_error_minimization": [Node() for _ in range(self.node_count)],
+            "salp": [Node() for _ in range(self.node_count)],
         }
         self.algorithms: dict[str, RandomAllocation | MultiwayNumberPartitioning] = {
-            "random_allocation": RandomAllocation(self.nodes["random_allocation"]),
-            "multiway_partitioning": MultiwayNumberPartitioning(self.nodes["multiway_partitioning"]),
-            "mean_squared_error_minimization": MeanSquaredErrorMinimization(self.nodes["mean_squared_error_minimization"])
+            # "random_allocation": RandomAllocation(self.nodes["random_allocation"]),
+            # "multiway_partitioning": MultiwayNumberPartitioning(self.nodes["multiway_partitioning"]),
+            # "mean_squared_error_minimization": MeanSquaredErrorMinimization(self.nodes["mean_squared_error_minimization"]),
+            "salp": ShardAllocationLoadPrediction(self.nodes["salp"]),
         }
 
     @staticmethod
@@ -136,7 +138,6 @@ class Main(InputOutput):
 
 
 if __name__ == "__main__":
-    print(sys.argv[1], len((sys.argv)))
     if len(sys.argv) == 2 and sys.argv[1] == "generate":
         main: Main = Main(mode="generate")
         main.run()

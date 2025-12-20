@@ -7,114 +7,8 @@ from copy import deepcopy, copy
 import random
 from dataclasses import dataclass
 from typing import List
-
-
-@dataclass
-class L2Object:
-    """Class to represent an object with L2 norm information."""
-    index: int = None
-    sum: int | float = None
-    load_vector: list[float] = None
-
-
-@dataclass
-class DeltaObject:
-    """Class to represent an object with delta information."""
-    index: int = None
-    delta: int | float = None
-    sum: int | float = None
-
-
-@dataclass
-class DeltaNode:
-    """Class to represent a collection of DeltaObjects."""
-    delta_list: List[DeltaObject]
-
-    def __iter__(self) -> Iterator[DeltaObject]:
-        """Iterator over the delta_list."""
-        return iter(self.delta_list)
-
-    def __len__(self) -> int:
-        """Returns the number of DeltaObjects in the delta_list."""
-        return len(self.delta_list)
-
-    def get_best_delta(self, sorting=False) -> DeltaObject:
-        """
-        Summary:
-            Retrieves the DeltaObject with the highest delta value. If sorting is True, sorts the delta_list first.
-        Parameters:
-            self: The DeltaNode instance.
-            sorting (bool): If True, sorts the delta_list before retrieving the best delta.
-        Returns:
-            DeltaObject
-        """
-        if sorting:
-            return max(self.delta_list, key=lambda x: (x.delta, -x.sum))
-        return self.delta_list[0]  # use that after sorting
-
-    def sort(self) -> None:
-        """
-        Summary:
-            Sorts the delta_list in place based on delta (descending) and sum (ascending).
-        Parameters:
-            self: The DeltaNode instance.
-        Returns:
-            None
-        """
-        self.delta_list.sort(key=lambda x: (x.delta, -x.sum), reverse=True)
-
-    def find_delta_objects_by_sum_and_delta(self, sum_value: int | float, delta_value: int | float) -> DeltaNode | None:
-        """
-        Summary:
-            Finds DeltaObjects in the delta_list that match the specified sum and delta values.
-        Parameters:
-            self: The DeltaNode instance.
-            sum_value (int | float): The sum value to match.
-            delta_value (int | float): The delta value to match.
-        Returns:
-            DeltaNode | None - A DeltaNode containing matching DeltaObjects or None if no matches are found.
-        """
-        delta = [d for d in self.delta_list if d.sum == sum_value and d.delta == delta_value]
-        if len(delta) == 0:
-            return None
-        return DeltaNode(delta_list=delta)
-
-    def has_duplicate_best_result(self) -> bool:
-        """
-        Summary:
-            Checks if there are multiple DeltaObjects in the delta_list with the same best delta and sum
-        Parameters:
-            self: The DeltaNode instance.
-        Returns:
-            bool - True if duplicates exist, False otherwise.
-        """
-        best_delta = self.get_best_delta()
-        count = sum(1 for delta in self.delta_list if delta.delta == best_delta.delta and delta.sum == best_delta.sum)
-        return count > 1
-
-    def append(self, delta_object: DeltaObject) -> None:
-        """
-        Summary:
-            Appends a DeltaObject to the delta_list.
-        Parameters:
-            self: The DeltaNode instance.
-            delta_object(DeltaObject): The DeltaObject to append.
-        Returns:
-            None
-        """
-        self.delta_list.append(delta_object)
-
-
-def sort_L2Objects(list_of_L2Objects: List[L2Object]) -> None:
-    """
-    Summary:
-        Sorts a list of L2Objects in place based on their sum attribute in descending order
-    Parameters:
-        list_of_L2Objects (List[l2Object]): The list of L2Objects to sort.
-    Returns:
-        None
-    """
-    list_of_L2Objects.sort(key=lambda x: x.sum, reverse=True)
+from utils.dataobjects import DeltaObject, DeltaNode, L2Object
+from utils.vectors_utils import VectorFactory
 
 
 class MeanSquaredErrorMinimization(ShardAlgorithm):
@@ -122,26 +16,7 @@ class MeanSquaredErrorMinimization(ShardAlgorithm):
 
     def __init__(self, list_of_nodes: list[Node]):
         super().__init__("Mean squared error minimization", list_of_nodes)
-
-    @staticmethod
-    def sum_squared_load_vector(list_of_load_vectors: list[list[float]]) -> List[L2Object]:
-        """
-        Summary:
-            Calculates the sum of squares for each load vector and returns a list of L2Objects.
-        Parameters:
-            list_of_load_vectors (list[list[float]]): A list of load vectors.
-        Returns:
-            List[L2Object]: A list of L2Objects containing index, sum of squares, and the load vector itself.
-        """
-        L2: List[L2Object] = [
-            L2Object(
-                index=index,
-                sum=sum(x ** 2 for x in vector),
-                load_vector=vector
-            )
-            for index, vector in enumerate(list_of_load_vectors)
-        ]
-        return L2
+        self.vector_factory: VectorFactory = VectorFactory()
 
     def allocate(self, list_of_load_vectors: list[list[float]]):
         """
@@ -152,8 +27,8 @@ class MeanSquaredErrorMinimization(ShardAlgorithm):
         Returns:
             None
         """
-        L2: List[L2Object] = self.sum_squared_load_vector(list_of_load_vectors)
-        sort_L2Objects(L2)
+        L2: List[L2Object] = self.vector_factory.get_l2_squared(list_of_load_vectors=list_of_load_vectors)
+        self.vector_factory.sort_vector_objects(vector_objects=L2, reverse=True)
 
         for L2_vector in L2:
             delta_node: DeltaNode = DeltaNode([])
