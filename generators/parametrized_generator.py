@@ -25,7 +25,7 @@ class ParametrizedGenerator(InputOutput):
 
 
     def calculate_KO(self, group_avg_amplitude: List[float], n_points=1000) -> List[float]:
-        target_KO_Matrix = np.full((self.N, self.N), self.KO)
+        target_KO_Matrix = np.full((self.K, self.K), self.KO)
         np.fill_diagonal(target_KO_Matrix, 1)
         
         def calculate_load_base_group(offset, amplitude):
@@ -46,7 +46,7 @@ class ParametrizedGenerator(InputOutput):
     
         bounds = [(0, 2*np.pi)] * self.N
 
-        result = differential_evolution(cost, bounds, strategy='currenttobest1bin', maxiter=1000, popsize=20, recombination=0.3, tol=1e-6, mutation=0.3)   
+        result = differential_evolution(cost, bounds, strategy='currenttobest1bin', maxiter=200, popsize=20, recombination=0.3, tol=1e-6, mutation=0.3)   
 
         best_offsets = result.x
         vectors_opt = np.array([calculate_load_base_group(o, a) for o, a in zip(best_offsets, group_avg_amplitude)])
