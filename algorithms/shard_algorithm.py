@@ -111,6 +111,6 @@ class ShardAlgorithm:
 
         # Sprzątanie (usuwanie folderu z klatkami)
         if not keep_frames:
-            shutil.rmtree(frames_folder)
+            shutil.rmtree(frames_folder, ignore_errors=True)
             print("Usunięto pliki tymczasowe.")
             self.frame_counter = 0
