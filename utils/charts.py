@@ -46,6 +46,7 @@ class ChartMSE:
         handles = [plt.Rectangle((0,0), 1, 1, color=COLOR_MAP[alg]) for alg in df.index]
         plot.legend(handles, df.index, title="Algorytmy", loc="lower center", borderpad=1.25)
         plt.tight_layout(rect=(0, 0.15, 1, 1))
+        plt.savefig("graphs/mse_comparison.png")
         plt.show()
         return
 
