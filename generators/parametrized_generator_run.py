@@ -24,6 +24,7 @@ def main():
     generator = ParametrizedGenerator(S=shard_count, N=5, K=2, R=0.05, KO=0.8, CN=1.0, D=3)
     vectors = generator.generate()
     generator.print_results()
+    #generator.create_plots()
 
     filename = sys.argv[2] if len(sys.argv) >= 3 else "result.csv"
     generator.save_to_csv_file(data=vectors, filename=filename)

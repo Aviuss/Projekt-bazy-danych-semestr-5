@@ -8,13 +8,13 @@ import random
 import numpy as np
 import pandas as pd
 from scipy.optimize import differential_evolution
+import matplotlib.pyplot as plt
 
 
 class ParametrizedGenerator(InputOutput):
-    def __init__(self, S, N, R, KO, CN, K=2, KI=1, dimensions=24, D=0):
+    def __init__(self, S, R, KO, CN, K=2, KI=1, dimensions=24, D=0):
         self.list_of_load_vectors: List[List[None | int]] = [None] * S
         self.S: int = S
-        self.N: int = N
         self.K: int = K
         self.D: float = D
         self.R: float = R
@@ -22,56 +22,92 @@ class ParametrizedGenerator(InputOutput):
         self.KI: float = KI
         self.CN: int = CN
         self.dimensions: int = dimensions
+        self.shards_groups = []
+        self.vectors_amplitude = []
+        self.vectors_offset_x = []
+
+    def create_plots(self):
+        POINTS = 100
+        ox = np.linspace(0, 2*np.pi * self.CN, POINTS)
+        vectors_grouped = []
+        for shards_in_group in self.shards_groups:
+            vectors_grouped.append([])
+            for vecIdx in shards_in_group["shard_index"]:
+                a = self.vectors_amplitude[vecIdx]
+                of = self.vectors_offset_x[vecIdx]
+
+                sinusoid = a * np.sin(ox + of)
+                vectors_grouped[len(vectors_grouped)-1].append(sinusoid)
+
+
+        colors = plt.cm.hsv(np.linspace(0, 1, len(vectors_grouped), endpoint=False))
+        plt.figure(figsize=(10, 5))
+
+        for group_idx, group in enumerate(vectors_grouped):
+            for vec_idx, vec in enumerate(group):
+                label = f"Grupa {group_idx+1}" if vec_idx == 0 else None
+                plt.plot(ox, vec, color=colors[group_idx], alpha=0.33, label=label)
+
+        plt.legend()
+
+
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.title(f"K={self.K}; KO={self.KO}; KI={self.KI}; R={self.R}; D={self.D}; CN={self.CN}")
+        plt.grid(True)
+        plt.show()
+
+
 
 
     def generate(self) -> pd.DataFrame:
-        shards_groups: List[Dict[str,int | float]] = [{"shard_index": [], "amplitude": 0.0, "offset_x": 0.0} for _ in range(self.K)]
-        vectors_amplitude = [0.0] * self.S
-        vectors_offset_x = [0.0] * self.S
+        self.shards_groups: List[Dict[str,int | float]] = [{"shard_index": [], "amplitude": 0.0, "offset_x": 0.0} for _ in range(self.K)]
+        self.vectors_amplitude = [0.0] * self.S
+        self.vectors_offset_x = [0.0] * self.S
 
         groups_assignment = self.assign_to_groups()
         print("Group assignment:", groups_assignment)
 
         for i in range(self.S):
             group_index = groups_assignment[i]
-            shards_groups[group_index]["shard_index"].append(i)
+            self.shards_groups[group_index]["shard_index"].append(i)
 
 
         for i in range(self.K):
             amplitude = random.uniform(0, 1)
             offset_x = random.uniform(0, 2*math.pi)
-            shards_groups[i]["amplitude"] = amplitude
-            shards_groups[i]["offset_x"] = offset_x
+            self.shards_groups[i]["amplitude"] = amplitude
+            self.shards_groups[i]["offset_x"] = offset_x
             var = (amplitude * self.R)**2 
 
-            for shard_index in shards_groups[i]["shard_index"]:
-                vectors_amplitude[shard_index] = np.random.lognormal(mean=amplitude, sigma=math.sqrt(var))
+            for shard_index in self.shards_groups[i]["shard_index"]:
+                self.vectors_amplitude[shard_index] = np.random.lognormal(mean=amplitude, sigma=math.sqrt(var))
         
-            amplitude_group = [vectors_amplitude[shard_index] for shard_index in shards_groups[i]["shard_index"]]
+            amplitude_group = [self.vectors_amplitude[shard_index] for shard_index in self.shards_groups[i]["shard_index"]]
             if (len(amplitude_group) == 0):
                 print("Uwaga! Pewna grupa jest pusta. Najlepiej jakbyś dostosował parametry")
                 continue
             inside_group_offsets = self.calculate_KX(self.KI, amplitude_group)
             
-            for iiii in range(len(shards_groups[i]["shard_index"])):
-                shard_index = shards_groups[i]["shard_index"][iiii]
-                vectors_offset_x[shard_index] = inside_group_offsets[iiii]
+            for iiii in range(len(self.shards_groups[i]["shard_index"])):
+                shard_index = self.shards_groups[i]["shard_index"][iiii]
+                self.vectors_offset_x[shard_index] = inside_group_offsets[iiii]
                 
 
-        amplitudes = [shards_groups[i]["amplitude"] for i in range(self.K)]
+        amplitudes = [self.shards_groups[i]["amplitude"] for i in range(self.K)]
         offsets_between_groups = self.calculate_KX(self.KO, amplitudes)
         for i in range(self.K):
             group_offset = offsets_between_groups[i]
-            for iiii in range(len(shards_groups[i]["shard_index"])):
-                shard_index = shards_groups[i]["shard_index"][iiii]
-                vectors_offset_x[shard_index] += group_offset
+            for iiii in range(len(self.shards_groups[i]["shard_index"])):
+                shard_index = self.shards_groups[i]["shard_index"][iiii]
+                self.vectors_offset_x[shard_index] += group_offset
 
 
         for i in range(self.K):
-            for shard_index in shards_groups[i]["shard_index"]:
+            for shard_index in self.shards_groups[i]["shard_index"]:
                 load_vector:List[float] = [None] * self.dimensions
-                amplitude = vectors_amplitude[shard_index]
-                offset_x = vectors_offset_x[shard_index]
+                amplitude = self.vectors_amplitude[shard_index]
+                offset_x = self.vectors_offset_x[shard_index]
 
                 for d in range(self.dimensions):
                     x = (2 * math.pi * self.CN * d) / self.dimensions
@@ -167,7 +203,7 @@ class ParametrizedGenerator(InputOutput):
     
 
 if __name__ == "__main__":
-    generator = ParametrizedGenerator(S=10, N=5, R=0.5, KO=0.7, CN=3, K=2, KI=1, dimensions=24, D=1.0)
+    generator = ParametrizedGenerator(S=10, R=0.5, KO=0.7, CN=3, K=2, KI=1, dimensions=24, D=1.0)
     df = generator.generate()
     generator.print_results()
     print(df)
