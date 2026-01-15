@@ -21,7 +21,7 @@ def main():
         print("Invalid argument shard_count:", e)
         return
 
-    generator = ParametrizedGenerator(S=shard_count, N=5, K=2, R=0.05, KO=0.8, CN=1.0, D=3)
+    generator = ParametrizedGenerator(S=shard_count, K=2, R=0.05, KO=0.8, CN=1.0, D=3)
     vectors = generator.generate()
     generator.print_results()
     #generator.create_plots()
