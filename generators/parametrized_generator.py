@@ -10,7 +10,6 @@ import pandas as pd
 from scipy.optimize import differential_evolution
 import matplotlib.pyplot as plt
 
-
 class ParametrizedGenerator(InputOutput):
     def __init__(self, S, R, KO, CN, K=2, KI=1, dimensions=24, D=0):
         self.list_of_load_vectors: List[List[None | int]] = [None] * S
@@ -27,37 +26,36 @@ class ParametrizedGenerator(InputOutput):
         self.vectors_offset_x = []
 
     def create_plots(self):
-        POINTS = 100
-        ox = np.linspace(0, 2*np.pi * self.CN, POINTS)
+        RESOLUTION = 5
+        N = self.dimensions * RESOLUTION
+        d = np.linspace(0, self.dimensions - 1, N)
         vectors_grouped = []
         for shards_in_group in self.shards_groups:
             vectors_grouped.append([])
-            for vecIdx in shards_in_group["shard_index"]:
-                a = self.vectors_amplitude[vecIdx]
-                of = self.vectors_offset_x[vecIdx]
+            for shard_index in shards_in_group["shard_index"]:
+                amplitude = self.vectors_amplitude[shard_index]
+                offset_x = self.vectors_offset_x[shard_index]
 
-                sinusoid = a * np.sin(ox + of)
-                vectors_grouped[len(vectors_grouped)-1].append(sinusoid)
+                x = (2 * math.pi * self.CN * d) / self.dimensions
+
+                load_vector = amplitude * np.sin(x + offset_x)
+                vectors_grouped[len(vectors_grouped)-1].append(load_vector)
 
 
         colors = plt.cm.hsv(np.linspace(0, 1, len(vectors_grouped), endpoint=False))
         plt.figure(figsize=(10, 5))
 
+        ox = np.linspace(1, self.dimensions, N)
         for group_idx, group in enumerate(vectors_grouped):
             for vec_idx, vec in enumerate(group):
                 label = f"Grupa {group_idx+1}" if vec_idx == 0 else None
                 plt.plot(ox, vec, color=colors[group_idx], alpha=0.33, label=label)
 
         plt.legend()
-
-
-        plt.xlabel("x")
-        plt.ylabel("y")
         plt.title(f"K={self.K}; KO={self.KO}; KI={self.KI}; R={self.R}; D={self.D}; CN={self.CN}")
+        plt.xticks(np.arange(1, self.dimensions+1, 1))
         plt.grid(True)
         plt.show()
-
-
 
 
     def generate(self) -> pd.DataFrame:
