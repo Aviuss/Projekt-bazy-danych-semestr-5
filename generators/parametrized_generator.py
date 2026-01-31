@@ -55,6 +55,8 @@ class ParametrizedGenerator(InputOutput):
         plt.title(f"K={self.K}; KO={self.KO}; KI={self.KI}; R={self.R}; D={self.D}; CN={self.CN}")
         plt.xticks(np.arange(1, self.dimensions+1, 1))
         plt.grid(True)
+        plt.xlabel("wektor obciążeń")
+        plt.ylabel("średnie obciążenie")
         plt.show()
 
 
@@ -101,6 +103,12 @@ class ParametrizedGenerator(InputOutput):
                 self.vectors_offset_x[shard_index] += group_offset
 
 
+        highest_amplitude = 0
+        for i in range(self.K):
+            for shard_index in self.shards_groups[i]["shard_index"]:
+                amplitude = self.vectors_amplitude[shard_index]
+                highest_amplitude = max(highest_amplitude, amplitude)
+        
         for i in range(self.K):
             for shard_index in self.shards_groups[i]["shard_index"]:
                 load_vector:List[float] = [None] * self.dimensions
@@ -109,7 +117,7 @@ class ParametrizedGenerator(InputOutput):
 
                 for d in range(self.dimensions):
                     x = (2 * math.pi * self.CN * d) / self.dimensions
-                    load_vector[d] = amplitude * math.sin(x + offset_x)
+                    load_vector[d] = amplitude * math.sin(x + offset_x)# + highest_amplitude
                 self.list_of_load_vectors[shard_index] = load_vector
         return pd.DataFrame(self.list_of_load_vectors)
     
