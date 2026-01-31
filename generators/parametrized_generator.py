@@ -29,6 +29,12 @@ class ParametrizedGenerator(InputOutput):
         RESOLUTION = 5
         N = self.dimensions * RESOLUTION
         d = np.linspace(0, self.dimensions - 1, N)
+        highest_amplitude = 0
+        for i in range(self.K):
+            for shard_index in self.shards_groups[i]["shard_index"]:
+                amplitude = self.vectors_amplitude[shard_index]
+                highest_amplitude = max(highest_amplitude, amplitude)
+
         vectors_grouped = []
         for shards_in_group in self.shards_groups:
             vectors_grouped.append([])
@@ -38,7 +44,7 @@ class ParametrizedGenerator(InputOutput):
 
                 x = (2 * math.pi * self.CN * d) / self.dimensions
 
-                load_vector = amplitude * np.sin(x + offset_x)
+                load_vector = amplitude * np.sin(x + offset_x) + highest_amplitude
                 vectors_grouped[len(vectors_grouped)-1].append(load_vector)
 
 
@@ -52,7 +58,7 @@ class ParametrizedGenerator(InputOutput):
                 plt.plot(ox, vec, color=colors[group_idx], alpha=0.33, label=label)
 
         plt.legend()
-        plt.title(f"K={self.K}; KO={self.KO}; KI={self.KI}; R={self.R}; D={self.D}; CN={self.CN}")
+        plt.title(f"S={self.S}; K={self.K}; KO={self.KO}; KI={self.KI}; R={self.R}; D={self.D}; CN={self.CN}")
         plt.xticks(np.arange(1, self.dimensions+1, 1))
         plt.grid(True)
         plt.xlabel("wektor obciążeń")
@@ -117,7 +123,7 @@ class ParametrizedGenerator(InputOutput):
 
                 for d in range(self.dimensions):
                     x = (2 * math.pi * self.CN * d) / self.dimensions
-                    load_vector[d] = amplitude * math.sin(x + offset_x)# + highest_amplitude
+                    load_vector[d] = amplitude * math.sin(x + offset_x) + highest_amplitude
                 self.list_of_load_vectors[shard_index] = load_vector
         return pd.DataFrame(self.list_of_load_vectors)
     
