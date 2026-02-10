@@ -8,10 +8,12 @@ import random
 import numpy as np
 import pandas as pd
 from scipy.optimize import differential_evolution
+import matplotlib
+matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 
 class ParametrizedGenerator(InputOutput):
-    def __init__(self, S, R, KO, CN, K=2, KI=1, dimensions=24, D=0):
+    def __init__(self, S, R, KO, CN, K=2, KI=1, dimensions=24, D=0, kx_error_threshold = 0.5):
         self.list_of_load_vectors: List[List[None | int]] = [None] * S
         self.S: int = S
         self.K: int = K
@@ -24,6 +26,7 @@ class ParametrizedGenerator(InputOutput):
         self.shards_groups = []
         self.vectors_amplitude = []
         self.vectors_offset_x = []
+        self.kx_error_threshold = kx_error_threshold
 
     def create_plots(self):
         RESOLUTION = 5
@@ -93,7 +96,10 @@ class ParametrizedGenerator(InputOutput):
             if (len(amplitude_group) == 0):
                 print("Uwaga! Pewna grupa jest pusta. Najlepiej jakbyś dostosował parametry")
                 continue
-            inside_group_offsets = self.calculate_KX(self.KI, amplitude_group)
+            kxres = self.calculate_KX(self.KI, amplitude_group)
+            if kxres == None:
+                return pd.DataFrame([])
+            inside_group_offsets = kxres[0]
             
             for iiii in range(len(self.shards_groups[i]["shard_index"])):
                 shard_index = self.shards_groups[i]["shard_index"][iiii]
@@ -101,14 +107,18 @@ class ParametrizedGenerator(InputOutput):
                 
 
         amplitudes = [self.shards_groups[i]["amplitude"] for i in range(self.K)]
-        offsets_between_groups = self.calculate_KX(self.KO, amplitudes)
+        kxres = self.calculate_KX(self.KO, amplitudes)
+        if kxres == None:
+            return pd.DataFrame([])
+
+        (offsets_between_groups, self.real_averaged_correlation) = kxres
         for i in range(self.K):
             group_offset = offsets_between_groups[i]
             for iiii in range(len(self.shards_groups[i]["shard_index"])):
                 shard_index = self.shards_groups[i]["shard_index"][iiii]
                 self.vectors_offset_x[shard_index] += group_offset
 
-
+        
         highest_amplitude = 0
         for i in range(self.K):
             for shard_index in self.shards_groups[i]["shard_index"]:
@@ -126,9 +136,8 @@ class ParametrizedGenerator(InputOutput):
                     load_vector[d] = amplitude * math.sin(x + offset_x) + highest_amplitude
                 self.list_of_load_vectors[shard_index] = load_vector
         return pd.DataFrame(self.list_of_load_vectors)
-    
 
-    def calculate_KX(self, kx, amplitude_list: List[float], n_points=500) -> List[float]:
+    def calculate_KX(self, kx, amplitude_list: List[float], n_points=500) -> List[float] | None:
         n = len(amplitude_list)
 
         target_KO_Matrix = np.full((n, n), kx)
@@ -161,10 +170,22 @@ class ParametrizedGenerator(InputOutput):
         print("Best offsets:", best_offsets)
         print("Target Kx:", kx)
         print("Optimized correlation matrix:\n", np.round(corr_matrix_opt, 2))
-        print("Average correlation", (np.sum(corr_matrix_opt) - n)/(n*n - n))
+        averaged_correlation = (np.sum(corr_matrix_opt) - n)/(n*n - n)
+        print("Average correlation", averaged_correlation)
         print("KO DEBUG ==  END  == ")
 
-        return best_offsets
+        for i in range(len(corr_matrix_opt)):
+            for j in range(len(corr_matrix_opt)):
+                if i == j:
+                    continue
+                error = abs(kx - corr_matrix_opt[i, j])
+                if error > self.kx_error_threshold:
+                    return None
+
+        return (best_offsets, averaged_correlation)
+
+    def return_real_averaged_correlation():
+        return self.real_averaged_correlation
 
     def assign_to_groups(self) -> list[int]:
         base_size = self.S // self.K
