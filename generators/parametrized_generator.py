@@ -184,7 +184,7 @@ class ParametrizedGenerator(InputOutput):
 
         return (best_offsets, averaged_correlation)
 
-    def return_real_averaged_correlation():
+    def return_real_averaged_correlation(self):
         return self.real_averaged_correlation
 
     def assign_to_groups(self) -> list[int]:
