@@ -88,10 +88,19 @@ class ParametrizedGenerator(InputOutput):
             self.shards_groups[i]["amplitude"] = amplitude
             self.shards_groups[i]["offset_x"] = offset_x
             var = (amplitude * self.R)**2 
-
             for shard_index in self.shards_groups[i]["shard_index"]:
-                self.vectors_amplitude[shard_index] = np.random.lognormal(mean=amplitude, sigma=math.sqrt(var))
+                self.vectors_amplitude[shard_index] = np.random.lognormal(mean=self.shards_groups[i]["amplitude"], sigma=math.sqrt(var))
+
+        # calculate KO
+        amplitudes = [self.shards_groups[i]["amplitude"] for i in range(self.K)]
+        kxres = self.calculate_KX(self.KO, amplitudes)
+        if kxres == None:
+            return pd.DataFrame([])
+
+        (offsets_between_groups, self.real_averaged_correlation) = kxres
         
+
+        for i in range(self.K):
             amplitude_group = [self.vectors_amplitude[shard_index] for shard_index in self.shards_groups[i]["shard_index"]]
             if (len(amplitude_group) == 0):
                 print("Uwaga! Pewna grupa jest pusta. Najlepiej jakbyś dostosował parametry")
@@ -106,12 +115,7 @@ class ParametrizedGenerator(InputOutput):
                 self.vectors_offset_x[shard_index] = inside_group_offsets[iiii]
                 
 
-        amplitudes = [self.shards_groups[i]["amplitude"] for i in range(self.K)]
-        kxres = self.calculate_KX(self.KO, amplitudes)
-        if kxres == None:
-            return pd.DataFrame([])
-
-        (offsets_between_groups, self.real_averaged_correlation) = kxres
+        ## apply KO
         for i in range(self.K):
             group_offset = offsets_between_groups[i]
             for iiii in range(len(self.shards_groups[i]["shard_index"])):
